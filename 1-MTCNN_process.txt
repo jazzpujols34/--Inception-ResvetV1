@@ -1,0 +1,53 @@
+from google.colab import drive
+
+drive.mount('/content/drive')
+
+!pip install mtcnn
+import os
+import shutil
+from mtcnn import MTCNN
+import cv2
+
+if not os.path.exists('/content/drive/MyDrive/Colab File/mtcnn_process_folder/process_image'):
+    os.mkdir('/content/drive/MyDrive/Colab File/mtcnn_process_folder/process_image')
+
+os.chdir('/content/drive/MyDrive/Colab File/mtcnn_process_folder/')
+
+dir_list = os.listdir()
+dir_list.sort()
+print(dir_list)
+
+for fol in dir_list:
+    print(fol)
+    if fol == 'process_image':
+        pass
+
+    if not os.path.exists('/content/drive/MyDrive/Colab File/mtcnn_process_folder/process_image/'+fol):
+        os.mkdir('/content/drive/MyDrive/Colab File/mtcnn_process_folder/process_image/'+fol)
+
+    os.chdir(fol)
+    img_list=os.listdir()
+    # print(os.getcwd())
+
+    
+
+    for image in img_list:
+
+        img = cv2.imread(image)
+        try:
+            img_rgb = img[:,:,::-1]
+            detector = MTCNN()
+            data = detector.detect_faces(img_rgb)
+
+            if len(data) >0 and float(data[0]['confidence']) > 0.9:
+                print(data[0]['confidence'])
+                shutil.move('/content/drive/MyDrive/Colab File/mtcnn_process_folder/'+fol+'/'+image,\
+                    '/content/drive/MyDrive/Colab File/mtcnn_process_folder/process_image/'+fol+'/'+image)
+        except:
+            pass
+    os.chdir('..')
+
+
+    
+
+    
